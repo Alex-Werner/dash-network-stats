@@ -1,5 +1,6 @@
 const Node = require('./src/Node');
 let node = new Node({
   mode:"discovery",
-  logLevel:'VERBOSE'
+  logLevel:'VERBOSE',
+  network:'mainnet'
 });

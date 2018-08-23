@@ -4,7 +4,8 @@ const Peer = require('./Peer');
 const fs = require('fs');
 const fileHelper = require('./utils/fileHelper');
 const Net = require('./utils/Net');
-
+const FIVE_MINUTES = 5*60*1000;
+const ONE_MINUTE = 1*60*1000;
 const defaultOpts = {
   peersPath:'.data/peers.json',
   peersFileActive:true,
@@ -55,6 +56,8 @@ class PeerList{
     logger.info('PeerList started');
   }
   async startDiscovery(expendPeerList=false){
+    const self = this;
+    setInterval(self.fetchDNSSeeds.bind(self, true), ONE_MINUTE)
    this.fetchDNSSeeds(true);
 
   }
@@ -136,6 +139,10 @@ class PeerList{
   addPeer(peer, addInFile = true, opts){
     const {ip} = peer;
     if(!this.getPeer({ip})){
+      if(!peer.addedDate){
+        peer.addedDate=Date.now()
+      }
+
       this.peers.known[ip]=peer;
     }
     // console.log(peer);

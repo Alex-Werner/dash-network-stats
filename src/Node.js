@@ -7,7 +7,7 @@ const fileconf = require('../config.json');
 const defaultOpts = {
   mode:'node',
   logLevel:'WARN',
-  chain:'testnet',
+  network:'mainnet',
   peers:{
     known:[]
   }
@@ -19,7 +19,7 @@ class Node {
     const logLevel = ['FATAL', 'ERROR', 'WARN', 'NOTICE', 'INFO', 'DEBUG', 'VERBOSE']
         .includes(confLogLevel.toUpperCase()) ? confLogLevel.toUpperCase() :  defaultOpts.logLevel;
     this.mode = _.get(opts, 'mode', defaultOpts.mode);
-    this.chain = new ChainParams(_.get(this.config, 'chain', defaultOpts.chain));
+    this.chain = new ChainParams(_.get(this.config, 'network', defaultOpts.network));
 
     let logger = global.logger = this.logger = new Logger({level: logLevel});
 
