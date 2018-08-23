@@ -3,11 +3,13 @@ const {EventEmitter2} = require('eventemitter2');
 const Peer = require('./Peer');
 const fs = require('fs');
 const fileHelper = require('./utils/fileHelper');
+const Net = require('./utils/Net');
 
 const defaultOpts = {
   peersPath:'.data/peers.json',
   peersFileActive:true,
-  peersFileSyncInterval:10000
+  peersFileSyncInterval:10000,
+  mode:'node',
 }
 class PeerList{
   constructor(opts){
@@ -19,7 +21,8 @@ class PeerList{
     if(!this.chain){
       throw new Error('Missing chain');
     }
-    this.DNSSeeds = _.get(opts, 'DNSSeeds', []);
+    this.DNSSeeds = _.get(opts, 'DNSSeeds', opts.chain.DNSSeeds);
+    this.mode = _.get(opts, 'mode', opts.mode);
     this.peers = {
       active: {},
       closed: {},
@@ -39,13 +42,47 @@ class PeerList{
         workerRunning:false
       }
     };
-
+    this.net = new Net();
     this.importConfigPeers(opts);
     this.importPeersFile(opts);
     if(this.workers.fileSync.active){
       this.startFileSyncWorker();
     }
+
+    if(this.mode==='discovery'){
+      this.startDiscovery(true);
+    }
     logger.info('PeerList started');
+  }
+  async startDiscovery(expendPeerList=false){
+   this.fetchDNSSeeds(true);
+
+  }
+  async fetchDNSSeeds(store=false){
+    const self = this;
+    const seeds = this.DNSSeeds || this.chain.DNSSeeds;
+    let promises = [];
+    seeds.forEach(async (seed)=>{
+      logger.info('Fetching DNS seed at ', seed);
+      promises.push(this.net.lookupHost(seed));
+    })
+    let resolved = await Promise.all(promises);
+    let lookups = [];
+    resolved.forEach((seeds)=>{
+      seeds.forEach((seed)=>{
+        if(!lookups.includes(seed)){
+          lookups.push(seed);
+        }
+      })
+    });
+    if(store){
+      const peerOpts = this.mode==='discovery' ? {priority:true} : {};
+      const addInFile = true;
+      lookups.forEach((ip)=>{
+        self.addPeer({ip}, addInFile, peerOpts)
+      })
+    }
+    return lookups;
   }
   stopFileSyncWorker(){
     clearInterval(this.workers.fileSync.workerExecInterval);
@@ -55,7 +92,9 @@ class PeerList{
 
     fileHelper.writeJSON(this.workers.fileSync.path, Object.assign({}, this.peers.known));
       this.peers.file.lastSave=Date.now()
-    console.log(this.peers);
+    console.log('execFileSyncWorker');
+    console.log(`${Object.keys(this.peers.known).length} known node`);
+    // console.log(this.peers);
   }
   startFileSyncWorker(){
     const self = this;
@@ -99,7 +138,7 @@ class PeerList{
     if(!this.getPeer({ip})){
       this.peers.known[ip]=peer;
     }
-    console.log(peer);
+    // console.log(peer);
   }
 };
 module.exports = PeerList;
