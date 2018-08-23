@@ -1,0 +1,43 @@
+{
+  "name": "dash-network-stats",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src/*",
+    "lint:fix": "eslint . --fix",
+    "test": "nyc --check-coverage --reporter=html --reporter=text mocha test/ --recursive",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alex-Werner/dash-network-stats.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alex-Werner/dash-network-stats/issues"
+  },
+  "homepage": "https://github.com/Alex-Werner/dash-network-stats#readme",
+  "dependencies": {
+    "binascii": "0.0.2",
+    "bs58": "^4.0.1",
+    "bufferpack": "0.0.6",
+    "eventemitter2": "^4.1.2",
+    "fs-extra": "^4.0.3",
+    "int64-buffer": "^0.1.9",
+    "jayson": "^2.0.5",
+    "lodash": "^4.17.4",
+    "x11-hash-js": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.10.0",
+    "nyc": "^11.9.0",
+    "mocha": "^5.2.0"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "agent":"/dash-network-stats.js:v1.0.0/",
+  "checkPeerInterval":60,
+  "checkPeerTimeout":900,
+  "minPeer":0,
+  "maxPeer":0,
+  "usePeerFile":true,
+  "discoverNewPeer":true,
+  "queueMaxSize":0,
+  "queueInterval":500,
+  "chain":"testnet",
+  "peers":["127.0.0.1"],
+  "logLevel":"VERBOSE",
+  "logInFile":true,
+  "rpcport":8998,
+  "rpcuser":"dash",
+  "rpcpass":"local321"
+}
